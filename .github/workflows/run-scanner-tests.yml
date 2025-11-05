@@ -53,3 +53,19 @@ jobs:
           scan_path: ${{ matrix.target }}
         env:
           BOOST_SCANNER_REGISTRY_REPO: ${{ github.repository }}
+
+  github:
+    name: GitHub
+    needs: run-tests
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check test results
+        run: |
+          if [[ "${{ needs.run-tests.result }}" == "success" ]]; then
+            echo "All tests passed"
+            exit 0
+          else
+            echo "Some tests failed"
+            exit 1
+          fi

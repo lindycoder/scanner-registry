@@ -1,8 +1,9 @@
-name: Run Scanner Tests
+name: Scanner Tests
 
 on:
-  repository_dispatch:
-    types: [run-scanner-tests]
+  pull_request:
+    paths:
+      - 'scanners/**'
 
 jobs:
   build-matrix:
@@ -25,8 +26,11 @@ jobs:
           REPO_URL=$(yq eval '.tests[0].source.url' $TEST_FILE)
           REPO_REF=$(yq eval '.tests[0].source.ref' $TEST_FILE)
 
+          # Extract owner/repo from URL (remove https://github.com/)
+          REPO=$(echo "$REPO_URL" | sed 's|https://github.com/||' | sed 's|\.git$||')
+
           echo "matrix={\"target\":$SCAN_PATHS}" >> $GITHUB_OUTPUT
-          echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
+          echo "repo_url=$REPO" >> $GITHUB_OUTPUT
           echo "repo_ref=$REPO_REF" >> $GITHUB_OUTPUT
 
   run-tests:

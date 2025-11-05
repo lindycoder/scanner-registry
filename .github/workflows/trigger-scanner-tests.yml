@@ -1,0 +1,16 @@
+name: Trigger Scanner Tests
+
+on:
+  pull_request:
+    paths:
+      - 'scanners/**'
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger scanner tests
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: run-scanner-tests

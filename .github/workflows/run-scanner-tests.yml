@@ -1,0 +1,51 @@
+name: Run Scanner Tests
+
+on:
+  repository_dispatch:
+    types: [run-scanner-tests]
+
+jobs:
+  build-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.create-matrix.outputs.matrix }}
+      repo_url: ${{ steps.create-matrix.outputs.repo_url }}
+      repo_ref: ${{ steps.create-matrix.outputs.repo_ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create test matrix
+        id: create-matrix
+        run: |
+          # Read the test.yaml for trivy-fs
+          TEST_FILE="scanners/boostsecurityio/trivy-fs/test.yaml"
+
+          # Extract scan paths using yq
+          SCAN_PATHS=$(yq eval '.tests[0].scan_paths[]' $TEST_FILE | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          REPO_URL=$(yq eval '.tests[0].source.url' $TEST_FILE)
+          REPO_REF=$(yq eval '.tests[0].source.ref' $TEST_FILE)
+
+          echo "matrix={\"target\":$SCAN_PATHS}" >> $GITHUB_OUTPUT
+          echo "repo_url=$REPO_URL" >> $GITHUB_OUTPUT
+          echo "repo_ref=$REPO_REF" >> $GITHUB_OUTPUT
+
+  run-tests:
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ needs.build-matrix.outputs.repo_url }}
+          ref: ${{ needs.build-matrix.outputs.repo_ref }}
+
+      - name: 'trivy-fs on ${{ matrix.target }}'
+        uses: boostsecurityio/boostsec-scanner-github@v4
+        with:
+          registry_module: boostsecurityio/trivy-fs
+          api_enabled: false
+          scan_label: ${{ matrix.target }}
+          scan_path: ${{ matrix.target }}
+        env:
+          BOOST_SCANNER_REGISTRY_REPO: ${{ github.repository }}

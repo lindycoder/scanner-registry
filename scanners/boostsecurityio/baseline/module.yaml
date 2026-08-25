@@ -41,7 +41,7 @@ steps:
     - scan:
         command:
           docker:
-            image: ghcr.io/boostsecurityio/scanner-publishing/boost-scanner-native:740d2ba@sha256:83dc303403ced9513ff8b8733d4d56c08845c967f278a3b48cbbc67b3d998673
+            image: ghcr.io/boostsecurityio/scanner-publishing/boost-scanner-native:8f8a409@sha256:7254ed0df115e4fb5bbf362db17bd87b6c28d7ee8a815f73645bfec217676aa6
             command: scanner scan
             workdir: /src
           name: scanner

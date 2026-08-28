@@ -118,8 +118,13 @@ steps:
           exit "$ec"
       format: sarif
       post-processor:
-        docker:
-          image: public.ecr.aws/boostsecurityio/boost-scanner-trivy:0269f97@sha256:9b9f2900aef1adfe2cf54a8a0ecc912bdb24c23c94970430b636f92075af586c
-          command: process
-          environment:
-            PYTHONIOENCODING: utf-8
+        - docker:
+            image: public.ecr.aws/boostsecurityio/boost-scanner-trivy:0269f97@sha256:9b9f2900aef1adfe2cf54a8a0ecc912bdb24c23c94970430b636f92075af586c
+            command: process
+            environment:
+              PYTHONIOENCODING: utf-8
+        - docker:
+            image: ghcr.io/martin-boost-dev-2/boost-scanner-threatrank:poc
+            # workdir is what bind-mounts the repository into the container;
+            # ThreatRank needs the source tree to build its call graph.
+            workdir: /src

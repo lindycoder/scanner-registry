@@ -124,7 +124,7 @@ steps:
             environment:
               PYTHONIOENCODING: utf-8
         - docker:
-            image: ghcr.io/boostsecurityio/boostsec-scanner-threatrank:spike-338
+            image: public.ecr.aws/boostsecurityio/boost-scanner-threatrank:8b063e4@sha256:006566420ec3e90d3c2a231d0be8a27e6b66b8a2920c154d9af4757d3db407a5
             command: process
             # workdir is what bind-mounts the repository into the container;
             # ThreatRank needs the source tree to build its call graph.

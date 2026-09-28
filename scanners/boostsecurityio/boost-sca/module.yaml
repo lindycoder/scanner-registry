@@ -134,7 +134,7 @@ steps:
 enrichment:
   docker:
     image: public.ecr.aws/boostsecurityio/boost-scanner-trivy-sbom:2527929@sha256:47d7670a4c6b4bb8a676f27e26ddf011648fb79a82bd4e61fecf3e749552b03b
-    command: reachability
+    command: version
     # not /app: srcdir is bind-mounted at workdir and the image lives under /app
     workdir: /scan
     environment:
